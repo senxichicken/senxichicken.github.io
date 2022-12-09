@@ -5,7 +5,7 @@ const app = new Application()
 
 const posts = [{id: 0, title: 'aaa', body: 'aaaaa'}, {id: 1, title: 'bbb', body: 'bbbbb'}]
 
-const wss = new WebSocketServer("wss://senxichicken.github.io/login.html");
+const wss = new WebSocketServer("ws://" + window.location.hostname + ":8080");
 
 wss.on("connection", function (ws) {
 	ws.on("message", function (message) {
@@ -41,4 +41,4 @@ app.use(async (ctx, next) => {
 })
 
 console.log('Server run at http://127.0.0.1:8002')
-await app.listen("https://senxichicken.github.io/login.html")
+await app.listen({ port: 8002 })
