@@ -1,1 +1,7 @@
-# senxichicken.github.io
+本網站模仿自 https://ithelp.ithome.com.tw/articles/10271866?sc=pt
+
+僅編輯文字內容與照片
+
+預計之後補齊關於自我介紹的部分，以及子網頁的連結，並改善圖片尚未對齊的部分。
+
+也考慮改成自製背景，希望能加入動態影片或gif檔的背景。

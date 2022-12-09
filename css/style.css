@@ -243,7 +243,11 @@ footer {
   }
 
   .primary__social {
+<<<<<<< HEAD
     display: flex;
+=======
+    display: none;
+>>>>>>> 8a289f14fb3d538f5fb3c0124017c1f6b36ddb1e
   }
 
   .primary__main-img {
@@ -458,4 +462,8 @@ footer nav {
   .footer-nav-list {
     margin-top: 30px;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 8a289f14fb3d538f5fb3c0124017c1f6b36ddb1e
