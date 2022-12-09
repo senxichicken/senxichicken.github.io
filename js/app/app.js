@@ -41,4 +41,4 @@ app.use(async (ctx, next) => {
 })
 
 console.log('Server run at http://127.0.0.1:8002')
-await app.listen({ port: 8002 })
+await app.listen("https://senxichicken.github.io/login.html")
