@@ -1,80 +1,44 @@
-import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
-import * as render from './render.js'
-import {
-  viewEngine,
-  engineFactory,
-  adapterFactory,
-} from "https://deno.land/x/view_engine@v1.4.5/mod.ts";
+import { Application, send } from "https://deno.land/x/oak/mod.ts";
+import { WebSocketServer } from "https://deno.land/x/websocket/mod.ts";
 
-const ejsEngine = engineFactory.getEjsEngine();
-const oakAdapter = adapterFactory.getOakAdapter();
+const app = new Application()
 
-const db = new DB("blog.db");
-db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT)");
+const posts = [{id: 0, title: 'aaa', body: 'aaaaa'}, {id: 1, title: 'bbb', body: 'bbbbb'}]
 
-const router = new Router();
+const wss = new WebSocketServer("ws://senxichicken.github.io/login.html");
 
-router.get('/', list)
-  .get('/post/new', add)
-  .get('/post/:id', show)
-  .post('/post', create)
-  .get('/public/(.*)', pub)
-
-  const app = new Application();
-  app.use(viewEngine(oakAdapter, ejsEngine));
-  app.use(router.routes());
-  app.use(router.allowedMethods());
-  
-  function query(sql) {
-    let list = []
-    for (const [id, title, body] of db.query(sql)) {
-      list.push({id, title, body})
+wss.on("connection", function (ws) {
+	ws.on("message", function (message) {
+    var id, post, msg = JSON.parse(message)
+		console.log('msg=', msg);
+    switch (msg.type) {
+      case 'list':
+        ws.send(JSON.stringify({type: 'list', posts}))
+        break
+      case 'show':
+        id = msg.post.id
+        post = posts[id]
+        ws.send(JSON.stringify({type: 'show', post}))
+        break
+      case 'create':
+        post = msg.post
+        id = posts.push(post) - 1
+        post.created_at = new Date()
+        post.id = id
+        ws.send(JSON.stringify({type: 'create', post}))
+        break
     }
-    return list
-  }
-  
-  async function list(ctx) {
-    let posts = query("SELECT id, title, body FROM posts")
-    ctx.render("views/list.ejs", {posts});
-  }
-  
-  async function add(ctx) {
-    ctx.render("./views/add.ejs");
-  }
-  
-  async function show(ctx) {
-    const pid = ctx.params.id;
-    let posts = query(`SELECT id, title, body FROM posts WHERE id=${pid}`)
-    let post = posts[0]
-    console.log('show:post=', post)
-    if (!post) ctx.throw(404, 'invalid post id');
-    ctx.render('views/show.ejs', {post})
-  }
-  
-  async function create(ctx) {
-    const body = ctx.request.body()
-    if (body.type === "form") {
-      const pairs = await body.value
-      const post = {}
-      for (const [key, value] of pairs) {
-        post[key] = value
-      }
-      console.log('create:post=', post)
-      db.query("INSERT INTO posts (title, body) VALUES (?, ?)", [post.title, post.body]);
-      ctx.response.redirect('/');
-    }
-  }
-  
-  async function pub(ctx) {
-    // console.log(ctx.params);
-    var path = ctx.params[0]
-    await send(ctx, path, {
-      root: Deno.cwd()+'/public',
-      index: "index.html",
-    });
-  }
-  
-  console.log('Server run at http://127.0.0.1:8000')
-  await app.listen({ port: 8000 });
-  
+	});
+});
+
+app.use(async (ctx, next) => {
+  await next()
+  console.log('path=', ctx.request.url.pathname)
+  await send(ctx, ctx.request.url.pathname, {
+    root: `${Deno.cwd()}/public/`,
+    index: "index.html",
+  })
+})
+
+console.log('Server run at http://127.0.0.1:8002')
+await app.listen({ port: 8002 })
