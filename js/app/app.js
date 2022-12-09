@@ -5,7 +5,7 @@ const app = new Application()
 
 const posts = [{id: 0, title: 'aaa', body: 'aaaaa'}, {id: 1, title: 'bbb', body: 'bbbbb'}]
 
-const wss = new WebSocketServer("ws://senxichicken.github.io/login.html");
+const wss = new WebSocketServer("wss://senxichicken.github.io/login.html");
 
 wss.on("connection", function (ws) {
 	ws.on("message", function (message) {
