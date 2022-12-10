@@ -1,21 +1,16 @@
-import { serve } from "https://deno.land/std@0.50.0/http/server.ts";
-const s = serve({ port: 8080 });
-console.log("http://localhost:8080/");
-for await (const req of s) {
-  if (req.url === "/login.html" && req.method === "POST") {
-    // 處理表單請求
-    const body = await Deno.readAll(req.body);
-    const formData = new TextDecoder().decode(body);
+import { WebSocketServer } from "https://deno.land/x/websocket@v0.1.3/mod.ts";
 
-    // 處理請求的資料...
-
-    // 發送 HTTP 302 跳轉響應，將使用者重定向到主頁面
-    req.respond({
-      status: 302,
-      headers: new Headers({
-        Location: "/111010567webdesignMID.html",
-      }),
+const clientMap = new Map()
+const wss = new WebSocketServer(8080)
+console.log('server started at 8080 port')
+wss.on("connection", function (ws) {
+  clientMap.set(ws, {})
+  ws.on("message", function (message) {
+    console.log(message);
+    for (let [client, obj] of clientMap) {
+      if (client != ws) {
+        client.send(message)
+      }
     }
-    )
-  }
-  }
+  })
+})

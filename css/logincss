@@ -8,7 +8,7 @@ html,body{
 	height: 100%;
 }
 body{
-	background: url('/assets/design/backgroud.png');
+	background: url('/assets/design/desktop-1024.png')cover;
     display: flex;
 	justify-content: center;
 	align-items: center;
