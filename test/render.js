@@ -99,8 +99,7 @@ export function layout(title, content) {
   export function show(post) {
     return layout(post.title, `
       <h1>${post.title}</h1>
-      <p>${post.body}</p>
+      <pre>${post.body}</pre>
     `)
   }
-  
   
